@@ -9,14 +9,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentResultListener;
 
 public class TestFragment extends Fragment {
-
+    private TextView recievedText;
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -40,9 +43,21 @@ public class TestFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v =  inflater.inflate(R.layout.fragment_layout,container,false);
+        recievedText = v.findViewById(R.id.textView_result);
          setHasOptionsMenu(true);
         Log.d("state", "onCreateView Fragment Called");
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+
+        //We want to recieve data from another fragment in this fragment
+        fragmentManager.setFragmentResultListener("requestKey", this, new FragmentResultListener() {
+            @Override
+            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+                String recievedData = result.getString("myString");
+                recievedText.setText(recievedData);
+            }
+        });
         return v;
+
     }
 
     @Override
@@ -108,5 +123,5 @@ public class TestFragment extends Fragment {
         }
         return false;
     }
-    
+
 }
